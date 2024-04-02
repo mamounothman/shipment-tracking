@@ -1,0 +1,10 @@
+const path = require('path');
+
+module.exports = {
+   // directory containing database seeders (data population scripts)
+   'seeders-path': path.resolve('src/common/database', 'seeders'),
+   // directory containing database migrations (schema change scripts)
+   'migrations-path': path.resolve('src/common/database', 'migrations'),
+   // Database configuration file
+   'config': path.resolve('src/common/database', 'sequelize.config.js'), 
+}
