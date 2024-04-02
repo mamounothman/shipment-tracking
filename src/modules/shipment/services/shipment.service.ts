@@ -3,6 +3,7 @@ import { Shipment } from '../entities/shipment.entity';
 import { SHIPMENT_REPOSITORY } from '../../../common/constants';
 import { UserService } from '../../user/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
+import { ProducerService } from '../../../common/kafka/services/producer.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -11,6 +12,7 @@ export class ShipmentService {
   constructor(
     @Inject(SHIPMENT_REPOSITORY) private shipmentRepository: typeof Shipment,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly producerService: ProducerService,
     private readonly userService: UserService,
   ) {}
 
@@ -57,6 +59,9 @@ export class ShipmentService {
     const userData = user['dataValues'];
 
     const shipmentData = { ...shipment, id: uuid, userId: userData.id };
+
+    this.notifyKafka(shipmentData);
+
     return this.shipmentRepository.create(shipmentData);
   }
 
@@ -91,5 +96,16 @@ export class ShipmentService {
     return await this.shipmentRepository.destroy({
       where: { id, userId: userData.id },
     });
+  }
+
+  notifyKafka(shipmentData) {
+    setTimeout(() => {
+      this.producerService.produce({
+        topic: 'shipment-tracking',
+        messages: [
+          {value: JSON.stringify(shipmentData)},
+        ],
+      });
+    }, 5000);
   }
 }

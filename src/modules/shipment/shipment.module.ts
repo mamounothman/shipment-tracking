@@ -8,6 +8,7 @@ import { UserProvider } from '../user/providers/user.provider';
 import { AccessContorlService } from '../../common/services/access-control.service';
 import { JwtService } from '@nestjs/jwt';
 import { ShipmentAdminController } from './controllers/shipment.admin.controller';
+import { ProducerService } from '../../common/kafka/services/producer.service';
 
 @Module({
   providers: [
@@ -17,6 +18,7 @@ import { ShipmentAdminController } from './controllers/shipment.admin.controller
     UserService,
     AccessContorlService,
     JwtService,
+    ProducerService
   ],
   controllers: [ShipmentController, ShipmentAdminController],
 })

@@ -1,5 +1,5 @@
 {
-  "name": "lesson01",
+  "name": "shipment-tracking",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "watch:all": "concurrently \"npx sequelize-cli db:migrate\" \"nest start --watch\"",
+    "watch:all": "concurrently \"npx sequelize-cli db:migrate\" \"npx sequelize-cli db:seed:all\" \"nest start --watch\"",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

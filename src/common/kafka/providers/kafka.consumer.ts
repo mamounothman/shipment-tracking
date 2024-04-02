@@ -3,16 +3,16 @@ import { ConsumerService } from "../services/consumer.service";
 
 @Injectable()
 
-export class TestConsumer implements OnModuleInit{
+export class KafkaConsumer implements OnModuleInit{
     constructor(private readonly consumerService: ConsumerService){}
 
     async onModuleInit() {
         await this.consumerService.consume(
-            { topics: ['test']},
+            { topics: ['shipment-tracking']},
             {
                 eachMessage: async ({topic, partition, message}) => {
                     console.log({
-                        value: message.value.toString(),
+                        value: message.value,
                         topic: topic.toString(),
                         partition: partition.toString(),
                     });
