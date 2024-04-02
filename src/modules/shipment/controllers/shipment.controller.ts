@@ -3,12 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Post,
   Put,
   Query,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ShipmentService } from '../services/shipment.service';
 import { Shipment } from '../dtos/shipment.dto';
@@ -18,8 +20,9 @@ import { Role } from '../../../common/enums/role.enum';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { RoleGuard } from '../../../common/guards/role.guard';
 import { AuthGuard } from '../../../common/guards/auth.guard';
-
+import { CacheInterceptor } from '@nestjs/cache-manager';
 @Controller('shipment')
+@UseInterceptors(CacheInterceptor)
 export class ShipmentController {
   constructor(private readonly shipmentService: ShipmentService) {}
 

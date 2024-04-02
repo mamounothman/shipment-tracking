@@ -54,7 +54,11 @@ export class UserService {
     offset: number = 1,
     limit: number = 5,
   ): Promise<{ rows: User[]; total: number; page: number }> {
-    const result = await this.userRepository.findAndCountAll({ offset: ((offset - 1) * limit), limit, order: ['createdAt'] });
+    const result = await this.userRepository.findAndCountAll({
+      offset: (offset - 1) * limit,
+      limit,
+      order: ['createdAt'],
+    });
     return { page: offset, total: result.count, rows: result.rows };
   }
 

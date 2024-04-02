@@ -9,6 +9,7 @@ import {
   Query,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserAdd } from '../dtos/userAdd';
 import { UserService } from '../services/user.service';
@@ -17,8 +18,9 @@ import { Role } from '../../../common/enums/role.enum';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { RoleGuard } from '../../../common/guards/role.guard';
 import { AuthGuard } from '../../../common/guards/auth.guard';
-
+import { CacheInterceptor } from '@nestjs/cache-manager';
 @Controller('admin/user')
+@UseInterceptors(CacheInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

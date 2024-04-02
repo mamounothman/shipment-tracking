@@ -3,14 +3,14 @@ import { Shipment } from '../entities/shipment.entity';
 import { SHIPMENT_REPOSITORY } from '../../../common/constants';
 import { UserService } from '../../user/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
-// import { REQUEST } from '@nestjs/core';
-// import { Request } from 'express';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ShipmentService {
-  // @Inject(REQUEST) private readonly request: Request
   constructor(
     @Inject(SHIPMENT_REPOSITORY) private shipmentRepository: typeof Shipment,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly userService: UserService,
   ) {}
 
@@ -31,9 +31,9 @@ export class ShipmentService {
     const userData = user['dataValues'];
     const result = await this.shipmentRepository.findAndCountAll({
       where: { userId: userData.id },
-      offset: ((offset - 1) * limit),
+      offset: (offset - 1) * limit,
       limit,
-      order: ['createdAt']
+      order: ['createdAt'],
     });
     return { page: offset, total: result.count, rows: result.rows };
   }
@@ -43,9 +43,9 @@ export class ShipmentService {
     limit: number = 5,
   ): Promise<{ rows: Shipment[]; total: number; page: number }> {
     const result = await this.shipmentRepository.findAndCountAll({
-      offset: ((offset - 1) * limit),
+      offset: (offset - 1) * limit,
       limit,
-      order: ['createdAt']
+      order: ['createdAt'],
     });
     return { page: offset, total: result.count, rows: result.rows };
   }

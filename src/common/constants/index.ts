@@ -10,3 +10,4 @@ export const USER = 'USER';
 export const GUEST = 'CLIENT';
 export const MODERATOR = 'MODERATOR';
 export const ROLE_KEY = 'role';
+export const CACHING = 'CACHING';

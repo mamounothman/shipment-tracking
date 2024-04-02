@@ -9,6 +9,7 @@ import {
   Query,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ShipmentService } from '../services/shipment.service';
 import { Shipment } from '../dtos/shipment.dto';
@@ -18,8 +19,10 @@ import { Role } from '../../../common/enums/role.enum';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { RoleGuard } from '../../../common/guards/role.guard';
 import { AuthGuard } from '../../../common/guards/auth.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('admin/shipment')
+@UseInterceptors(CacheInterceptor)
 export class ShipmentAdminController {
   constructor(private readonly shipmentService: ShipmentService) {}
 
@@ -31,10 +34,7 @@ export class ShipmentAdminController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
   ) {
-    return this.shipmentService.getAllShipment(
-      +page,
-      +limit,
-    );
+    return this.shipmentService.getAllShipment(+page, +limit);
   }
 
   @Roles(Role.ADMIN)
