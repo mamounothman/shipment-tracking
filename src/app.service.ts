@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Sequelize } from 'sequelize-typescript';
+import { ProducerService } from './common/kafka/services/producer.service';
+
 @Injectable()
 export class AppService {
-  constructor(private configService: ConfigService) {}
+  constructor(private readonly producerService: ProducerService) {}
 
-  getHello(): string {
+  async getHello() {
+    this.producerService.produce({
+      topic: 'test',
+      messages: [{
+        value: "Hello World!"
+      }]
+    })
     return '11 World 1';
   }
 }

@@ -11,9 +11,11 @@ import { ShipmentModule } from './modules/shipment/shipment.module';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CacheProvider } from './common/providers/cache.service';
+import { KafkaModule } from './common/kafka/kafka.module';
 
 @Module({
   imports: [
+    KafkaModule,
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync({
       isGlobal: true,
