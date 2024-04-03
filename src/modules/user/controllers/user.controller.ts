@@ -42,6 +42,13 @@ export class UserController {
     return await this.userService.createUser(user);
   }
 
+  @Get(':id')
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RoleGuard)
+  async get(@Param('id') id: number) {
+    return this.userService.findOneById(id);
+  }
+
   @Put(':id')
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RoleGuard)

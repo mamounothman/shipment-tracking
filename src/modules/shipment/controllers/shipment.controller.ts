@@ -50,6 +50,15 @@ export class ShipmentController {
 
   @Roles(Role.USER)
   @UseGuards(JwAuthGuard('jwt'), AuthGuard, RoleGuard)
+  @Get(':id')
+  async get(
+    @Param('id') id: number
+  ) {
+    return this.shipmentService.findOneById(id);
+  }
+
+  @Roles(Role.USER)
+  @UseGuards(JwAuthGuard('jwt'), AuthGuard, RoleGuard)
   @Put(':id')
   async update(
     @Param('id') id: number,
