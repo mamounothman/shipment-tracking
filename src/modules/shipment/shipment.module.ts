@@ -9,8 +9,10 @@ import { AccessContorlService } from '../../common/services/access-control.servi
 import { JwtService } from '@nestjs/jwt';
 import { ShipmentAdminController } from './controllers/shipment.admin.controller';
 import { ProducerService } from '../../common/kafka/services/producer.service';
-
+import { ConsumerService } from 'src/common/kafka/services/consumer.service';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
+  imports: [ScheduleModule.forRoot()],
   providers: [
     ShipmentService,
     ...ShipmentProvider,
@@ -18,7 +20,8 @@ import { ProducerService } from '../../common/kafka/services/producer.service';
     UserService,
     AccessContorlService,
     JwtService,
-    ProducerService
+    ProducerService,
+    ConsumerService
   ],
   controllers: [ShipmentController, ShipmentAdminController],
 })

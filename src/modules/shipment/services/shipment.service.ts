@@ -4,15 +4,20 @@ import { SHIPMENT_REPOSITORY } from '../../../common/constants';
 import { UserService } from '../../user/services/user.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ProducerService } from '../../../common/kafka/services/producer.service';
+import { ConsumerService } from '../../../common/kafka/services/consumer.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
-@Injectable({ scope: Scope.REQUEST })
+import {IN_PROGRESS, DELIVERED } from '../../../common/constants/index';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+@Injectable()
 export class ShipmentService {
   constructor(
     @Inject(SHIPMENT_REPOSITORY) private shipmentRepository: typeof Shipment,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly producerService: ProducerService,
+    private readonly consumerService: ConsumerService,
     private readonly userService: UserService,
   ) {}
 
@@ -99,13 +104,43 @@ export class ShipmentService {
   }
 
   notifyKafka(shipmentData) {
-    setTimeout(() => {
-      this.producerService.produce({
-        topic: 'shipment-tracking',
-        messages: [
-          {value: JSON.stringify(shipmentData)},
-        ],
-      });
-    }, 5000);
+    const statuses = [IN_PROGRESS, DELIVERED];
+    for(const x of [1, 2]) {
+      const interval = 5000 * x;
+      console.log(interval);
+      setTimeout(() => {
+        console.log(`sending data in ${x}`);
+        this.producerService.produce({
+          topic: 'shipment-tracking',
+          messages: [
+            {value: JSON.stringify({id: shipmentData.id, status: statuses[x - 1] })},
+          ],
+        });
+      }, interval);
+    }
+  }
+
+  @Cron('5 * * * * *')
+  async consumeKafka() {
+    await this.consumerService.consume(
+        { topics: ['shipment-tracking']},
+        {
+            eachMessage: async ({topic, partition, message}) => {
+              const shipmentData = JSON.parse(message.value.toString());
+              console.log(shipmentData);
+              this.adminUpdateShipment(shipmentData.id, {status: shipmentData.status});
+            }
+        }
+    );
+    // await this.consumerService.consume(
+    //   { topics: ['shipment-tracking']},
+    //     {
+    //         eachMessage: async ({topic, partition, message}) => {
+    //           const [id, shipmentData] = JSON.parse(message.value.toString());
+    //           console.log(`shipment Id: ${id}, status ${shipmentData.status} !!!!!`);
+    //           // this.adminUpdateShipment(id, shipmentData);
+    //         }
+    //     }
+    // );
   }
 }

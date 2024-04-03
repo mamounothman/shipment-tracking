@@ -1,21 +1,24 @@
 import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Consumer, ConsumerRunConfig, ConsumerSubscribeTopics, Kafka, Producer} from 'kafkajs';
 
 @Injectable()
-// OnApplicationShutdown
-export class ConsumerService implements OnModuleInit {
-    private readonly kafkaServer = new Kafka({
-        brokers: ['kafka:9092']
-    });
+export class ConsumerService {
+    private readonly kafkaServer;
+    private readonly producer;
+    private readonly consumers;
 
-    private readonly consumers: Consumer[] = [];
-     
-
-    private readonly producer: Producer = this.kafkaServer.producer();
-
-    async onModuleInit() {
-        await this.producer.connect()
+    constructor(private readonly config: ConfigService) {
+        this.kafkaServer = new Kafka({
+            brokers: [config.get('KAFKA_HOST') + ':' + config.get('KAFKA_PORT')]
+        });
+        this.producer= this.kafkaServer.producer();
+        this.consumers = [];
     }
+
+    // async onModuleInit() {
+    //     await this.producer.connect()
+    // }
 
     async consume(topic: ConsumerSubscribeTopics, config: ConsumerRunConfig) {
         const consumer = this.kafkaServer.consumer({groupId: 'shipment-tracking'});
